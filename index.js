@@ -1,1 +1,1 @@
-const myModal = library.modal()
+const myModal = library.modal(options)
