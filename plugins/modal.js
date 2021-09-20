@@ -52,37 +52,6 @@ function _createModal(options) {
   return modal
 }
 
-const options = {
-  modalTitle: 'Modal title',
-  closeButton: '&times;',
-  content: `
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit, debitis?</p>   
-    <p>Lorem ipsum dol ea facilis rerum odit quis in quisquam sapiente.</p>
-  `,
-  footerButtons: [
-    {
-      text: 'OK',
-      type: 'primary',
-      handler() {
-        console.log('Primary btn clicked')
-        myModal.close()
-      }
-    },
-    {
-      text: 'Cancel',
-      type: 'danger',
-      handler() {
-        console.log('Danger btn clicked')
-        myModal.close()
-      }
-    }
-  ],
-  okButton: 'OK',
-  cancelButton: 'Cancel',
-  isCanCloseModal: true,
-  width: '600px'
-}
-
 library.modal = function (options) {
   const elModal = _createModal(options)
   const ANIMATION_SPEED = 200
@@ -99,13 +68,13 @@ library.modal = function (options) {
       elModal.classList.remove('open')
       elModal.classList.add('hide-animation')
       setTimeout(() => {
-        elModal.classList.remove('hide')
+        elModal.classList.remove('hide-animation')
         isOpen = false
       }, ANIMATION_SPEED)
     }
   }
 
-  const listener = e => (e.target.dataset.close ? modalMethods.close() : '')
+  const listener = e => e.target.dataset.close && modalMethods.close()
 
   elModal.addEventListener('click', listener)
 
