@@ -1,4 +1,4 @@
-const fruits = [
+let fruits = [
   { id: 1, title: 'Apple', price: 20, img: 'https://lifeglobe.net/x/entry/6259/1a-0.jpg' },
   {
     id: 2,
@@ -54,31 +54,6 @@ const priceModal = library.modal({
   width: '600px'
 })
 
-const confirmModal = library.modal({
-  modalTitle: 'Are you sure?',
-  closeButton: '&times;',
-  footerButtons: [
-    {
-      text: 'Cancel',
-      type: 'secondary',
-      handler() {
-        confirmModal.close()
-      }
-    },
-    {
-      text: 'Delete fruit',
-      type: 'danger',
-      handler() {
-        confirmModal.close()
-      }
-    }
-  ],
-  okButton: 'OK',
-  cancelButton: 'Cancel',
-  isCanCloseModal: false,
-  width: '600px'
-})
-
 document.addEventListener('click', e => {
   e.preventDefault()
   const btnType = e.target.dataset.btn
@@ -92,10 +67,15 @@ document.addEventListener('click', e => {
 
     priceModal.open()
   } else if (btnType === 'remove') {
-    confirmModal.setContent(`
-      <p>Do you want delete: <strong>${fruit.title} ?</strong> </p>
-    `)
-
-    confirmModal.open()
+    library
+      .confirm({
+        title: 'Are you sure?',
+        content: `<p>Do you want delete: <strong>${fruit.title} ?</strong> </p>`
+      })
+      .then(() => {
+        fruits = fruits.filter(item => item.id !== fruitId)
+        renderFruitCards()
+      })
+      .catch(() => console.log('cancel'))
   }
 })

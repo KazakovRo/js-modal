@@ -70,6 +70,8 @@ library.modal = function (options) {
       setTimeout(() => {
         elModal.classList.remove('hide-animation')
         isOpen = false
+
+        typeof options.deleteFromHtml === 'function' && options.deleteFromHtml()
       }, ANIMATION_SPEED)
     }
   }
