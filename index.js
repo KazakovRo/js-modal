@@ -15,7 +15,7 @@ let fruits = [
 ]
 
 const createCard = fruit => `
-  <div class="col" style="max-width: 400px">
+  <div class="col" style="max-width: 400px; margin: 20px 0;">
     <div class="card" style="width: 350px">
       <img src="${fruit.img}" class="card-img-top" style="height: 300px" alt="${fruit.title}" />
       <div class="card-body">
@@ -36,24 +36,6 @@ function renderFruitCards() {
 
 renderFruitCards()
 
-const priceModal = library.modal({
-  modalTitle: 'Product price',
-  closeButton: '&times;',
-  footerButtons: [
-    {
-      text: 'Close modal',
-      type: 'primary',
-      handler() {
-        priceModal.close()
-      }
-    }
-  ],
-  okButton: 'OK',
-  cancelButton: 'Cancel',
-  isCanCloseModal: true,
-  width: '600px'
-})
-
 document.addEventListener('click', e => {
   e.preventDefault()
   const btnType = e.target.dataset.btn
@@ -61,11 +43,29 @@ document.addEventListener('click', e => {
   const fruit = fruits.find(item => item.id === fruitId)
 
   if (btnType === 'price') {
-    priceModal.setContent(`
-      <p>Price for ${fruit.title}: <strong>${fruit.price}$</strong> </p>
-    `)
+    library
+      .price({
+        title: 'Product price',
+        content: `<p>Price for ${fruit.title}: <strong>${fruit.price}$</strong> </p>`
+      })
+      .then(() => {
+        // reduce
+        fruits = fruits.reduce(
+          (acc, elem) => (elem.id === fruitId ? [...acc, { ...elem, id: Math.random() * 1000 }] : acc),
+          fruits
+        )
 
-    priceModal.open()
+        // fruits = fruits.reduce((acc, elem) => {
+        //   if (elem.id === fruitId) {
+        //     return [...acc, { ...elem, id: Math.random() * 1000 }]
+        //   }
+
+        //   return acc
+        // }, fruits)
+
+        renderFruitCards()
+      })
+      .catch(() => console.log('catch'))
   } else if (btnType === 'remove') {
     library
       .confirm({
