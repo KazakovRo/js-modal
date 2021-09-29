@@ -1,4 +1,4 @@
-const fruits = [
+let fruits = [
   { id: 1, title: 'Apple', price: 20, img: 'https://lifeglobe.net/x/entry/6259/1a-0.jpg' },
   {
     id: 2,
@@ -15,7 +15,7 @@ const fruits = [
 ]
 
 const createCard = fruit => `
-  <div class="col" style="max-width: 400px">
+  <div class="col" style="max-width: 400px; margin: 20px 0;">
     <div class="card" style="width: 350px">
       <img src="${fruit.img}" class="card-img-top" style="height: 300px" alt="${fruit.title}" />
       <div class="card-body">
@@ -36,49 +36,6 @@ function renderFruitCards() {
 
 renderFruitCards()
 
-const priceModal = library.modal({
-  modalTitle: 'Product price',
-  closeButton: '&times;',
-  footerButtons: [
-    {
-      text: 'Close modal',
-      type: 'primary',
-      handler() {
-        priceModal.close()
-      }
-    }
-  ],
-  okButton: 'OK',
-  cancelButton: 'Cancel',
-  isCanCloseModal: true,
-  width: '600px'
-})
-
-const confirmModal = library.modal({
-  modalTitle: 'Are you sure?',
-  closeButton: '&times;',
-  footerButtons: [
-    {
-      text: 'Cancel',
-      type: 'secondary',
-      handler() {
-        confirmModal.close()
-      }
-    },
-    {
-      text: 'Delete fruit',
-      type: 'danger',
-      handler() {
-        confirmModal.close()
-      }
-    }
-  ],
-  okButton: 'OK',
-  cancelButton: 'Cancel',
-  isCanCloseModal: false,
-  width: '600px'
-})
-
 document.addEventListener('click', e => {
   e.preventDefault()
   const btnType = e.target.dataset.btn
@@ -86,16 +43,39 @@ document.addEventListener('click', e => {
   const fruit = fruits.find(item => item.id === fruitId)
 
   if (btnType === 'price') {
-    priceModal.setContent(`
-      <p>Price for ${fruit.title}: <strong>${fruit.price}$</strong> </p>
-    `)
+    library
+      .price({
+        title: 'Product price',
+        content: `<p>Price for ${fruit.title}: <strong>${fruit.price}$</strong> </p>`
+      })
+      .then(() => {
+        // reduce
+        fruits = fruits.reduce(
+          (acc, elem) => (elem.id === fruitId ? [...acc, { ...elem, id: Math.random() * 1000 }] : acc),
+          fruits
+        )
 
-    priceModal.open()
+        // fruits = fruits.reduce((acc, elem) => {
+        //   if (elem.id === fruitId) {
+        //     return [...acc, { ...elem, id: Math.random() * 1000 }]
+        //   }
+
+        //   return acc
+        // }, fruits)
+
+        renderFruitCards()
+      })
+      .catch(() => console.log('catch'))
   } else if (btnType === 'remove') {
-    confirmModal.setContent(`
-      <p>Do you want delete: <strong>${fruit.title} ?</strong> </p>
-    `)
-
-    confirmModal.open()
+    library
+      .confirm({
+        title: 'Are you sure?',
+        content: `<p>Do you want delete: <strong>${fruit.title} ?</strong> </p>`
+      })
+      .then(() => {
+        fruits = fruits.filter(item => item.id !== fruitId)
+        renderFruitCards()
+      })
+      .catch(() => console.log('cancel'))
   }
 })
